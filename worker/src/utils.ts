@@ -64,6 +64,16 @@ export const saveSetting = async (
     return true;
 }
 
+export const deleteSetting = async (
+    c: Context<HonoCustomType>,
+    key: string
+) => {
+    await c.env.DB.prepare(
+        `DELETE FROM settings WHERE key = ?`
+    ).bind(key).run();
+    return true;
+}
+
 export const getStringValue = (value: any): string => {
     if (typeof value === "string") {
         return value;
@@ -366,7 +376,7 @@ export const getMaxAddressCount = async (
     if (!roleConfigs) return settings.maxAddressCount;
     const roleMaxCount = roleConfigs[userRole]?.maxAddressCount;
     if (typeof roleMaxCount !== 'number') return settings.maxAddressCount;
-    if (roleMaxCount <= 0) return settings.maxAddressCount;
+    if (roleMaxCount < 0) return settings.maxAddressCount;
     return roleMaxCount;
 };
 
